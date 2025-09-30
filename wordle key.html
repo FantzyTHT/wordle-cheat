@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Raw Wordle Decryption (Infinite Letters with Wrapping)</title>
+  <style>
+    body { font-family: sans-serif; margin: 2em; }
+    input, button { padding: 0.5em; font-size: 1em; width: 100%; max-width: 400px; }
+    #results { margin-top: 1em; max-width: 600px; }
+    ul { margin-top: 0.5em; columns: 2; }
+  </style>
+</head>
+<body>
+  <h1>Custom Wordle Decoder (Supports Infinite Letters)</h1>
+  <p>Enter the encoded string (e.g. <code>lbvxxs...</code>) and it will decode all possible original letter combinations using a fixed 6-letter pattern per character.</p>
+
+  <input type="text" id="encoded" placeholder="Enter encoded string" />
+  <button onclick="decrypt()">Show Possible Words</button>
+
+  <div id="results"></div>
+
+  <script>
+    const letterMap = {
+      A: 'wordle', B: 'xpsemf', C: 'yqtfng', D: 'zrugoh', E: 'asvhpi',
+      F: 'btwiqj', G: 'cuxjrk', H: 'dvyksl', I: 'ewzltm', J: 'fxamun',
+      K: 'gybnvo', L: 'hzcowp', M: 'iadpxq', N: 'jbeqyr', O: 'kcfrzs',
+      P: 'ldgsat', Q: 'mehtbu', R: 'nfiucv', S: 'ogjvdw', T: 'phkwex',
+      U: 'qilxfy', V: 'rjmygz', W: 'sknzha', X: 'tloaib', Y: 'umpbjc',
+      Z: 'vnqckd'
+    };
+
+    function decrypt() {
+      const encoded = document.getElementById("encoded").value.toLowerCase();
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "";
+
+      if (!/^[a-z]+$/.test(encoded)) {
+        resultsDiv.innerHTML = "<p>Please enter a valid lowercase string (a–z only).</p>";
+        return;
+      }
+
+      const length = encoded.length;
+      const matches = Array(length).fill().map(() => []);
+
+      // For each character in encoded input
+      for (let i = 0; i < length; i++) {
+        const targetChar = encoded[i];
+        const mapIndex = i % 6; // wrap around using modulo
+
+        for (const [letter, map] of Object.entries(letterMap)) {
+          if (map[mapIndex] === targetChar) {
+            matches[i].push(letter.toLowerCase());
+          }
+        }
+      }
+
+      if (matches.some(arr => arr.length === 0)) {
+        resultsDiv.innerHTML = "<p>No possible combinations found for this code.</p>";
+        return;
+      }
+
+      // Safety limit: warn if result set too big
+      const estimatedCount = matches.reduce((acc, arr) => acc * arr.length, 1);
+      if (estimatedCount > 10000) {
+        resultsDiv.innerHTML = `<p>Too many combinations to display (${estimatedCount.toLocaleString()}). Try a shorter or more specific code.</p>`;
+        return;
+      }
+
+      const allCombos = cartesian(...matches).map(arr => arr.join(""));
+
+      resultsDiv.innerHTML = `
+        <p><strong>${allCombos.length}</strong> possible combination(s):</p>
+        <ul>${allCombos.map(word => `<li>${word}</li>`).join("")}</ul>
+      `;
+    }
+
+    function cartesian(...arrays) {
+      return arrays.reduce((acc, curr) =>
+        acc.flatMap(a => curr.map(b => a.concat(b))), [[]]);
+    }
+  </script>
+</body>
+</html>
