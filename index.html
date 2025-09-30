@@ -6,116 +6,190 @@
   <link rel="icon" href="icon.png" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg: #f5f5f5;
+      --card-bg: #fff;
+      --text: #333;
+      --input-bg: #fff;
+      --input-border: #ccc;
+      --button-bg: #6cace4;
+      --button-hover: #5a9dd4;
+      --error: #c0392b;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1e1e1e;
+        --card-bg: #2c2c2c;
+        --text: #f1f1f1;
+        --input-bg: #3a3a3a;
+        --input-border: #555;
+        --button-bg: #6cace4;
+        --button-hover: #5a9dd4;
+        --error: #e74c3c;
+      }
+    }
+
+    [data-theme="light"] {
+      --bg: #f5f5f5;
+      --card-bg: #fff;
+      --text: #333;
+      --input-bg: #fff;
+      --input-border: #ccc;
+      --button-bg: #6cace4;
+      --button-hover: #5a9dd4;
+      --error: #c0392b;
+    }
+
+    [data-theme="dark"] {
+      --bg: #1e1e1e;
+      --card-bg: #2c2c2c;
+      --text: #f1f1f1;
+      --input-bg: #3a3a3a;
+      --input-border: #555;
+      --button-bg: #6cace4;
+      --button-hover: #5a9dd4;
+      --error: #e74c3c;
+    }
+
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
       font-family: 'Inter', sans-serif;
-      background: #f4f4f8;
-      color: #333;
+      background-color: var(--bg);
+      color: var(--text);
       display: flex;
+      align-items: center;
       justify-content: center;
-      padding: 3em 1em;
+      min-height: 100vh;
+      padding: 1em;
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
-    .container {
-      max-width: 600px;
+    .wrapper {
       width: 100%;
-      background: #fff;
+      max-width: 480px;
+      background: var(--card-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       padding: 2em;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+      transition: background 0.3s ease, border 0.3s ease;
     }
 
     h1 {
-      font-size: 1.8em;
-      margin-bottom: 1em;
+      font-size: 1.6rem;
+      font-weight: 600;
       text-align: center;
-      color: #2c3e50;
+      margin-bottom: 1.5em;
     }
 
-    input[type="text"] {
-      padding: 0.8em 1em;
-      font-size: 1em;
+    .input-group {
+      margin-bottom: 1.5em;
+    }
+
+    .input-group input {
       width: 100%;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin-bottom: 1em;
+      padding: 0.75em 1em;
+      font-size: 1rem;
+      background: var(--input-bg);
+      color: var(--text);
+      border: 1px solid var(--input-border);
+      border-radius: 6px;
       transition: border-color 0.2s;
     }
 
-    input:focus {
+    .input-group input:focus {
+      border-color: var(--button-bg);
       outline: none;
-      border-color: #3498db;
     }
 
-    button {
-      padding: 0.8em 1em;
-      font-size: 1em;
+    .input-group button {
       width: 100%;
-      background-color: #3498db;
-      color: white;
+      margin-top: 0.75em;
+      padding: 0.75em;
+      font-size: 1rem;
+      background-color: var(--button-bg);
+      color: #fff;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
       font-weight: 600;
       transition: background-color 0.2s;
     }
 
-    button:hover {
-      background-color: #2980b9;
+    .input-group button:hover {
+      background-color: var(--button-hover);
     }
 
     #results {
-      margin-top: 2em;
+      margin-top: 1.5em;
+      border-top: 1px solid var(--input-border);
       padding-top: 1em;
-      border-top: 1px solid #eee;
-      animation: fadeIn 0.4s ease-in;
     }
 
-    p {
-      margin-bottom: 0.5em;
+    #results p {
+      margin-bottom: 0.75em;
+      line-height: 1.4;
     }
 
-    ul {
-      margin: 1em 0 0 0;
-      padding-left: 1em;
-      columns: 2;
-      list-style-type: disc;
-      animation: fadeIn 0.5s ease-in;
+    #results p strong {
+      color: var(--text);
     }
 
-    li {
-      margin-bottom: 0.3em;
-    }
-
-    .error {
-      color: #e74c3c;
+    #results .error {
+      color: var(--error);
       font-weight: 600;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    #results ul {
+      list-style: disc inside;
+      columns: 2;
+      gap: 1em;
     }
 
-    @media (max-width: 500px) {
-      ul {
+    #results li {
+      margin-bottom: 0.4em;
+      word-break: break-word;
+    }
+
+    .theme-toggle {
+      text-align: center;
+      margin-top: 1.5em;
+    }
+
+    .theme-toggle button {
+      font-size: 0.9em;
+      background: none;
+      border: none;
+      color: var(--button-bg);
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0.5em 1em;
+    }
+
+    @media (max-width: 400px) {
+      #results ul {
         columns: 1;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="wrapper">
     <h1>Custom Wordle Decoder</h1>
-    
-    <input type="text" id="encoded" placeholder="Enter encoded string (lowercase letters only)" />
-    <button onclick="decrypt()">Show Possible Words</button>
-
+    <div class="input-group">
+      <input type="text" id="encoded" placeholder="Enter encoded string (lowercase letters)" />
+      <button onclick="decrypt()">Show Possible Words</button>
+    </div>
     <div id="results"></div>
+    <div class="theme-toggle">
+      <button onclick="toggleTheme()">Toggle Light/Dark Mode</button>
+    </div>
   </div>
 
   <script>
@@ -134,7 +208,7 @@
       resultsDiv.innerHTML = "";
 
       if (!/^[a-z]+$/.test(encoded)) {
-        resultsDiv.innerHTML = `<p class="error">⚠ Please enter a valid lowercase string (a–z only).</p>`;
+        resultsDiv.innerHTML = `<p class="error">⚠ Please enter only lowercase letters (a–z).</p>`;
         return;
       }
 
@@ -142,38 +216,42 @@
       const matches = Array(length).fill().map(() => []);
 
       for (let i = 0; i < length; i++) {
-        const targetChar = encoded[i];
-        const mapIndex = i % 6;
-
+        const target = encoded[i];
+        const mapIdx = i % 6;
         for (const [letter, map] of Object.entries(letterMap)) {
-          if (map[mapIndex] === targetChar) {
+          if (map[mapIdx] === target) {
             matches[i].push(letter.toLowerCase());
           }
         }
       }
 
       if (matches.some(arr => arr.length === 0)) {
-        resultsDiv.innerHTML = `<p class="error">❌ No possible combinations found for this code.</p>`;
+        resultsDiv.innerHTML = `<p class="error">❌ No possible combinations found.</p>`;
         return;
       }
 
-      const estimatedCount = matches.reduce((acc, arr) => acc * arr.length, 1);
-      if (estimatedCount > 10000) {
-        resultsDiv.innerHTML = `<p class="error">⚠ Too many combinations to display (${estimatedCount.toLocaleString()}). Try a shorter or more specific code.</p>`;
+      const estCount = matches.reduce((acc, arr) => acc * arr.length, 1);
+      if (estCount > 5000) {
+        resultsDiv.innerHTML = `<p class="error">⚠ Too many combinations (${estCount.toLocaleString()}). Try shorter or more specific input.</p>`;
         return;
       }
 
-      const allCombos = cartesian(...matches).map(arr => arr.join(""));
-
+      const all = cartesian(...matches).map(arr => arr.join(""));
       resultsDiv.innerHTML = `
-        <p><strong>${allCombos.length}</strong> possible combination(s):</p>
-        <ul>${allCombos.map(word => `<li>${word}</li>`).join("")}</ul>
+        <p><strong>${all.length}</strong> possible combination(s):</p>
+        <ul>${all.map(w => `<li>${w}</li>`).join('')}</ul>
       `;
     }
 
     function cartesian(...arrays) {
       return arrays.reduce((acc, curr) =>
         acc.flatMap(a => curr.map(b => a.concat(b))), [[]]);
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
     }
   </script>
 </body>
