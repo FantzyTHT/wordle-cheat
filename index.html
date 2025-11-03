@@ -193,59 +193,42 @@
   </div>
 
   <script>
-    const letterMap = {
-      A: 'wordle', B: 'xpsemf', C: 'yqtfng', D: 'zrugoh', E: 'asvhpi',
-      F: 'btwiqj', G: 'cuxjrk', H: 'dvyksl', I: 'ewzltm', J: 'fxamun',
-      K: 'gybnvo', L: 'hzcowp', M: 'iadpxq', N: 'jbeqyr', O: 'kcfrzs',
-      P: 'ldgsat', Q: 'mehtbu', R: 'nfiucv', S: 'ogjvdw', T: 'phkwex',
-      U: 'qilxfy', V: 'rjmygz', W: 'sknzha', X: 'tloaib', Y: 'umpbjc',
-      Z: 'vnqckd'
-    };
+    const KEY = "wordle";
 
     function decrypt() {
-      const encoded = document.getElementById("encoded").value.toLowerCase();
+      const input = document.getElementById("encoded").value;
       const resultsDiv = document.getElementById("results");
       resultsDiv.innerHTML = "";
 
-      if (!/^[a-z]+$/.test(encoded)) {
-        resultsDiv.innerHTML = `<p class="error">⚠ Please enter only lowercase letters (a–z).</p>`;
+      if (!/^[a-zA-Z]+$/.test(input)) {
+        resultsDiv.innerHTML = `<p class="error">⚠ Please enter only letters (A–Z).</p>`;
         return;
       }
 
-      const length = encoded.length;
-      const matches = Array(length).fill().map(() => []);
-
-      for (let i = 0; i < length; i++) {
-        const target = encoded[i];
-        const mapIdx = i % 6;
-        for (const [letter, map] of Object.entries(letterMap)) {
-          if (map[mapIdx] === target) {
-            matches[i].push(letter.toLowerCase());
-          }
-        }
-      }
-
-      if (matches.some(arr => arr.length === 0)) {
-        resultsDiv.innerHTML = `<p class="error">❌ No possible combinations found.</p>`;
-        return;
-      }
-
-      const estCount = matches.reduce((acc, arr) => acc * arr.length, 1);
-      if (estCount > 5000) {
-        resultsDiv.innerHTML = `<p class="error">⚠ Too many combinations (${estCount.toLocaleString()}). Try shorter or more specific input.</p>`;
-        return;
-      }
-
-      const all = cartesian(...matches).map(arr => arr.join(""));
-      resultsDiv.innerHTML = `
-        <p><strong>${all.length}</strong> possible combination(s):</p>
-        <ul>${all.map(w => `<li>${w}</li>`).join('')}</ul>
-      `;
+      const decoded = vigenereDecrypt(input, KEY);
+      resultsDiv.innerHTML = `<p><strong>Decoded message:</strong></p><p>${decoded}</p>`;
     }
 
-    function cartesian(...arrays) {
-      return arrays.reduce((acc, curr) =>
-        acc.flatMap(a => curr.map(b => a.concat(b))), [[]]);
+    function vigenereDecrypt(ciphertext, key) {
+      const A = "A".charCodeAt(0);
+      const a = "a".charCodeAt(0);
+      const keyLower = key.toLowerCase();
+      let result = "";
+      let keyIndex = 0;
+      for (const char of ciphertext) {
+        const isUpper = char >= "A" && char <= "Z";
+        const base = isUpper ? A : a;
+        const code = char.charCodeAt(0);
+        if ((isUpper || (char >= "a" && char <= "z"))) {
+          const shift = keyLower.charCodeAt(keyIndex % keyLower.length) - a;
+          const decrypted = ((code - base - shift + 26) % 26) + base;
+          result += String.fromCharCode(decrypted);
+          keyIndex++;
+        } else {
+          result += char;
+        }
+      }
+      return result;
     }
 
     function toggleTheme() {
